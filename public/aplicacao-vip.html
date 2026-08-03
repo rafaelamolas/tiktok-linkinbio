@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aplicação — Consultoria VIP de Milhas | Rafaela Molas</title>
+<meta name="description" content="Consultoria VIP de Milhas com Rafaela Molas. Vagas limitadas — aplicação obrigatória.">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<main class="container">
+
+  <a href="/index.html" class="back-link">← voltar ao início</a>
+
+  <!-- HERO -->
+  <section id="hero">
+    <p class="eyebrow">Consultoria VIP de Milhas</p>
+    <h1 style="font-size:30px;margin-top:8px;">Consultoria VIP<br>de Milhas</h1>
+    <p class="hero-price">R$ 4.000</p>
+
+    <p class="hero-lead">
+      Para quem gasta mais de <strong>R$ 20 mil/mês</strong> no cartão
+      e não tem tempo pra estudar milhas.
+    </p>
+
+    <p class="hero-lead" style="margin-top:16px;">
+      Você não precisa parar sua vida pra aprender: quem estuda sou eu.
+      Analiso teu perfil, tuas metas de viagem, escolho os cartões e
+      programas certos e te entrego um plano pronto pra executar.
+    </p>
+
+    <span class="badge-limited">Vagas limitadas — aplicação obrigatória</span>
+
+    <button id="btn-start" class="btn btn-vip" style="margin-top:28px;">
+      <div class="btn-title" style="justify-content:center;">Começar aplicação ↓</div>
+    </button>
+  </section>
+
+  <!-- FORM -->
+  <section id="form-section" hidden>
+    <div class="progress-track">
+      <div id="progress-fill" class="progress-fill"></div>
+    </div>
+    <p class="progress-label"><span id="q-num">1</span> de <span id="q-total">12</span></p>
+
+    <form id="app-form" novalidate>
+      <div id="question-card" class="question-card"></div>
+      <p id="error-msg" class="error-msg"></p>
+
+      <div class="form-nav">
+        <button type="button" id="btn-prev" class="btn-nav btn-nav-prev">← Anterior</button>
+        <button type="button" id="btn-next" class="btn-nav btn-nav-next">Próxima →</button>
+      </div>
+    </form>
+
+    <p class="keyboard-hint">Enter avança • setas ← → navegam</p>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result-section" hidden></section>
+
+</main>
+
+<script src="/form.js"></script>
+</body>
+</html>
