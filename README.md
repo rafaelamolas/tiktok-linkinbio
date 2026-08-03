@@ -54,6 +54,8 @@ recebem um CTA pro Desafio Milhas 7 Dias em vez de "aguarde contato".
 | `TELEGRAM_BOT_TOKEN` | Token do bot que notifica a Rafaela |
 | `TELEGRAM_CHAT_ID` | Chat ID da Rafaela (Sofia) no Telegram |
 
+<!-- redeploy trigger 2026-08-03 -->
+
 ## Deploy
 
 Deploy no Vercel (`vercel --prod`). `outputDirectory` aponta pra `public/`;
