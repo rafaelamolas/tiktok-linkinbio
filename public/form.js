@@ -463,7 +463,7 @@
         '<h1 class="result-title">Obrigada pela sua aplicação' + (nome ? ', ' + escapeHtml(nome) : '') + '.</h1>' +
         '<div class="result-body">' +
         '<p>Pelo teu perfil, o melhor caminho AGORA é o Desafio Milhas em 7 dias.</p>' +
-        '<p>Em 7 dias você já economiza mais do que o valor investido — e sai com um plano concreto pra sua próxima viagem.</p>' +
+        '<p>Em 7 dias você vai aprender a MULTIPLICAR as suas milhas muito além do cartão — para finalmente tirar as viagens do papel.</p>' +
         '<p>Quando fizer sentido subir pra Consultoria VIP, eu tô aqui.</p>' +
         '</div>';
 
