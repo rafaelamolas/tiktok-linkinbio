@@ -77,15 +77,6 @@ export default async function handler(req, res) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
 
-  const debug = {
-    hasToken: Boolean(token),
-    hasChatId: Boolean(chatId),
-    tokenLen: token ? token.length : 0,
-    chatIdVal: chatId || null,
-    telegramStatus: null,
-    telegramBody: null
-  };
-
   let telegramOk = false;
   if (token && chatId) {
     try {
@@ -98,14 +89,17 @@ export default async function handler(req, res) {
           parse_mode: 'HTML'
         })
       });
-      debug.telegramStatus = resp.status;
-      const body = await resp.text().catch(() => '');
-      debug.telegramBody = body.slice(0, 200);
       telegramOk = resp.ok;
+      if (!resp.ok) {
+        const body = await resp.text().catch(() => '');
+        console.error('Falha ao enviar Telegram:', resp.status, body);
+      }
     } catch (err) {
-      debug.telegramBody = `EXCEPTION: ${String(err).slice(0, 200)}`;
+      console.error('Erro ao notificar Telegram:', err);
     }
+  } else {
+    console.error('TELEGRAM_BOT_TOKEN ou TELEGRAM_CHAT_ID ausentes nas env vars.');
   }
 
-  res.status(200).json({ ok: true, classe, telegramOk, debug });
+  res.status(200).json({ ok: true, classe, telegramOk });
 }
