@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Link-in-bio + aplicação Consultoria VIP — Rafaela Molas (Milhas Sem Segredo)",
+  "description": "Link-in-bio + aplicação Consultoria VIP — Rafaela Molás (Milhas Sem Segredo)",
   "engines": {
     "node": ">=18"
   }

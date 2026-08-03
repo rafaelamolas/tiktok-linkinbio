@@ -1,4 +1,4 @@
-# TikTok Link-in-Bio — Rafaela Molas
+# TikTok Link-in-Bio — Rafaela Molás
 
 Link-in-bio próprio (substitui o link direto pro Desafio na bio do TikTok) +
 formulário de aplicação para a Consultoria VIP de Milhas.
