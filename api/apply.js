@@ -2,18 +2,11 @@
 // classifica o lead e notifica a Rafaela no Telegram.
 
 function classificar(respostas) {
+  // Regra Rafaela 2026-08-13: classificação depende SÓ do gasto (q3).
+  // q10 (pronta pra investir) não qualifica mais a persona.
   const gasto = respostas.q3;
-  const pronta = respostas.q10;
-
-  if (
-    (gasto === 'De R$20 a R$30 mil' || gasto === 'Acima de R$30 mil') &&
-    pronta === 'Sim, já sei que é retorno garantido'
-  ) {
-    return 'QUENTE';
-  }
-  if (gasto === 'Até R$10 mil' || pronta === 'Ainda não tenho certeza') {
-    return 'FRIO';
-  }
+  if (gasto === 'Acima de R$30 mil') return 'QUENTE';
+  if (gasto === 'Até R$10 mil') return 'FRIO';
   return 'MEDIO';
 }
 
@@ -46,7 +39,7 @@ export default async function handler(req, res) {
   }
 
   // validação mínima dos campos obrigatórios
-  const obrigatorios = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q12'];
+  const obrigatorios = ['q1', 'q2', 'q13', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10', 'q12'];
   const faltando = obrigatorios.filter((k) => !respostas[k] || !String(respostas[k]).trim());
   if (faltando.length) {
     res.status(400).json({ ok: false, error: 'missing_fields', fields: faltando });
@@ -60,7 +53,8 @@ export default async function handler(req, res) {
   const texto =
     `${emoji} <b>NOVA APLICAÇÃO VIP — ${classe}</b>\n\n` +
     `👤 ${escapeHtml(respostas.q1)}\n` +
-    `📱 ${escapeHtml(respostas.q2)}\n\n` +
+    `📱 ${escapeHtml(respostas.q2)}\n` +
+    `📸 ${escapeHtml(respostas.q13)}\n\n` +
     `💳 Gasto/mês: ${escapeHtml(respostas.q3)}\n` +
     `🎯 Usa milhas: ${escapeHtml(respostas.q4)}\n` +
     `✈️ Objetivo: ${escapeHtml(respostas.q5)}\n` +

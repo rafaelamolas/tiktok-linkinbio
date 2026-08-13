@@ -30,6 +30,22 @@
       errorText: 'Digite um WhatsApp válido, com DDD (ou DDI se for do exterior).'
     },
     {
+      id: 'q13',
+      type: 'text',
+      label: 'Qual seu @ do Instagram?',
+      hint: 'Canal alternativo caso o WhatsApp esteja com algum erro.',
+      placeholder: '@seuusuario',
+      required: true,
+      validate: function (v) {
+        var handle = String(v).trim()
+          .replace(/^https?:\/\/(www\.)?instagram\.com\//i, '')
+          .replace(/[\/?#].*$/, '')
+          .replace(/^@+/, '');
+        return /^[A-Za-z0-9._]{1,30}$/.test(handle);
+      },
+      errorText: 'Digite um @ válido (só letras, números, ponto e underscore).'
+    },
+    {
       id: 'q3',
       type: 'radio',
       label: 'Quanto você gasta em média por mês no cartão de crédito?',
@@ -401,6 +417,15 @@
     QUESTIONS.forEach(function (q) {
       payload[q.id] = answers[q.id] || '';
     });
+
+    // normaliza @instagram pra formato "@handle" antes de enviar
+    if (payload.q13) {
+      var handle = String(payload.q13).trim()
+        .replace(/^https?:\/\/(www\.)?instagram\.com\//i, '')
+        .replace(/[\/?#].*$/, '')
+        .replace(/^@+/, '');
+      payload.q13 = '@' + handle;
+    }
 
     fetch('/api/apply', {
       method: 'POST',
