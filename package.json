@@ -6,5 +6,8 @@
   "description": "Link-in-bio + aplicação Consultoria VIP — Rafaela Molás (Milhas Sem Segredo)",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "ioredis": "^6.0.0"
   }
 }

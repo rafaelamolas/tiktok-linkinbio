@@ -1,5 +1,11 @@
 // Vercel Serverless Function — recebe a aplicação da Consultoria VIP,
-// classifica o lead e notifica a Rafaela no Telegram.
+// classifica o lead, persiste no CRM e notifica a Rafaela no Telegram.
+
+import { addAplicacao } from './_lib/store.js';
+
+function randomId() {
+  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+}
 
 function classificar(respostas) {
   // Regra Rafaela 2026-08-13: classificação depende SÓ do gasto (q3).
@@ -47,6 +53,34 @@ export default async function handler(req, res) {
   }
 
   const classe = classificar(respostas);
+
+  // persiste no CRM (silenciosamente — nunca bloqueia a resposta pro cliente)
+  const registro = {
+    id: randomId(),
+    recebidoEm: new Date().toISOString(),
+    classe,
+    q1: String(respostas.q1 || ''),
+    q2: String(respostas.q2 || ''),
+    q13: String(respostas.q13 || ''),
+    q3: String(respostas.q3 || ''),
+    q4: String(respostas.q4 || ''),
+    q5: String(respostas.q5 || ''),
+    q6: String(respostas.q6 || ''),
+    q7: String(respostas.q7 || ''),
+    q8: String(respostas.q8 || ''),
+    q9: String(respostas.q9 || ''),
+    q10: String(respostas.q10 || ''),
+    q11: String(respostas.q11 || ''),
+    q12: String(respostas.q12 || ''),
+    status: 'aberto',
+    notas: '',
+    atualizadoEm: new Date().toISOString()
+  };
+  try {
+    await addAplicacao(registro);
+  } catch (err) {
+    console.error('Falha ao persistir aplicação no CRM:', err);
+  }
 
   const emoji = { QUENTE: '🟢', MEDIO: '🟡', FRIO: '🔴' }[classe] || '⚪';
 

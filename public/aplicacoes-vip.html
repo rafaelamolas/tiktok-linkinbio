@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM Aplicações VIP — Rafaela Molás</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<style>
+:root {
+  --bg: #0a0a0a;
+  --panel: #141414;
+  --panel-2: #1c1c1c;
+  --line: #2a2a2a;
+  --ink: #f2f2f2;
+  --ink-dim: #a8a8a8;
+  --gold: #d4af37;
+  --gold-dark: #a5811f;
+  --green: #22c55e;
+  --yellow: #eab308;
+  --red: #ef4444;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--sans); font-size: 14px; line-height: 1.4;
+  min-height: 100vh; -webkit-font-smoothing: antialiased;
+}
+button, input, textarea, select {
+  font: inherit; color: inherit;
+}
+button { cursor: pointer; }
+
+/* ---- Login ---- */
+.login-shell {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 32px;
+}
+.login-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+  padding: 40px 32px; width: 100%; max-width: 380px;
+}
+.login-card h1 {
+  margin: 0 0 6px; color: var(--gold); font-size: 22px; font-weight: 700; letter-spacing: 0.02em;
+}
+.login-card .sub { color: var(--ink-dim); margin-bottom: 26px; font-size: 13px; }
+.login-card input[type="password"] {
+  width: 100%; background: var(--bg); border: 1px solid var(--line);
+  border-radius: 10px; padding: 12px 14px; margin-bottom: 12px;
+}
+.login-card input[type="password"]:focus { outline: none; border-color: var(--gold); }
+.login-card button {
+  width: 100%; background: var(--gold); color: #0a0a0a; border: none;
+  border-radius: 10px; padding: 12px; font-weight: 700; letter-spacing: 0.02em;
+}
+.login-card button:hover { background: var(--gold-dark); color: #fff; }
+.login-card .err { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 18px; }
+
+/* ---- App ---- */
+.app { display: none; }
+.app.on { display: block; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: 14px 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+.topbar h1 {
+  margin: 0; font-size: 16px; letter-spacing: 0.02em; color: var(--gold);
+}
+.topbar .count { color: var(--ink-dim); font-size: 13px; }
+.topbar .spacer { flex: 1; }
+.topbar button {
+  background: transparent; border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 12px; color: var(--ink);
+}
+.topbar button:hover { border-color: var(--gold); color: var(--gold); }
+
+.filters {
+  padding: 16px 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  border-bottom: 1px solid var(--line);
+}
+.filters input[type="text"] {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px 12px; min-width: 220px; flex: 1;
+}
+.filters input[type="text"]:focus { outline: none; border-color: var(--gold); }
+.filters select {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px 10px;
+}
+.filters select:focus { outline: none; border-color: var(--gold); }
+
+/* ---- Table ---- */
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%; border-collapse: collapse; min-width: 900px;
+}
+th, td {
+  text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top;
+}
+th { color: var(--ink-dim); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
+tr.row { cursor: pointer; }
+tr.row:hover { background: var(--panel); }
+tr.row.open { background: var(--panel); }
+
+.chip {
+  display: inline-block; padding: 3px 9px; border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+}
+.chip.q { background: rgba(34,197,94,0.14); color: var(--green); }
+.chip.m { background: rgba(234,179,8,0.14); color: var(--yellow); }
+.chip.f { background: rgba(239,68,68,0.14); color: var(--red); }
+
+.stat {
+  display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 12px;
+  border: 1px solid var(--line); color: var(--ink-dim);
+}
+.stat.aberto { color: var(--gold); border-color: var(--gold-dark); }
+.stat.em_andamento { color: #60a5fa; border-color: #1e3a8a; }
+.stat.fechado { color: var(--green); border-color: #14532d; }
+.stat.perdido { color: var(--ink-dim); }
+
+.nome { font-weight: 600; }
+.contato { color: var(--ink-dim); font-size: 12px; margin-top: 3px; }
+.contato a { color: var(--gold); text-decoration: none; }
+.contato a:hover { text-decoration: underline; }
+
+/* ---- Drawer (row expandido) ---- */
+tr.detail { background: var(--panel-2); }
+tr.detail td { padding: 20px 24px 24px; border-top: 1px dashed var(--line); }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 32px; }
+.detail-grid .fld { font-size: 13px; }
+.detail-grid .fld label {
+  display: block; color: var(--ink-dim); font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; margin-bottom: 4px;
+}
+.detail-grid .fld .val { white-space: pre-wrap; word-break: break-word; }
+.detail-actions {
+  margin-top: 18px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+}
+.detail-actions select, .detail-actions button {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 9px 12px;
+}
+.detail-actions button.save {
+  background: var(--gold); color: #0a0a0a; border: none; font-weight: 700;
+}
+.detail-actions button.save:hover { background: var(--gold-dark); color: #fff; }
+.detail-actions .msg { color: var(--green); font-size: 13px; margin-left: 8px; }
+.detail-actions .msg.err { color: var(--red); }
+
+.notas textarea {
+  width: 100%; min-height: 80px; background: var(--panel); border: 1px solid var(--line);
+  border-radius: 8px; padding: 10px 12px; resize: vertical; font-size: 13px;
+}
+.notas textarea:focus { outline: none; border-color: var(--gold); }
+
+.empty {
+  padding: 60px 20px; text-align: center; color: var(--ink-dim);
+}
+.empty h2 { color: var(--ink); font-size: 18px; margin: 0 0 8px; }
+
+.warning {
+  background: rgba(234,179,8,0.14); color: var(--yellow);
+  padding: 10px 20px; border-bottom: 1px solid var(--line); font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .filters input[type="text"] { min-width: 100%; }
+  .detail-grid { grid-template-columns: 1fr; }
+  th, td { padding: 10px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="login-shell">
+  <div class="login-card">
+    <h1>CRM Aplicações VIP</h1>
+    <p class="sub">Rafaela Molás — acesso restrito</p>
+    <form id="login-form">
+      <input type="password" id="pwd" placeholder="Senha" autocomplete="current-password" autofocus>
+      <button type="submit">Entrar</button>
+      <div class="err" id="login-err"></div>
+    </form>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="app">
+  <div class="topbar">
+    <h1>Aplicações VIP</h1>
+    <span class="count" id="count">—</span>
+    <span class="spacer"></span>
+    <button id="btn-reload">↻ Atualizar</button>
+    <button id="btn-csv">⇩ Exportar CSV</button>
+    <button id="btn-logout">Sair</button>
+  </div>
+
+  <div class="warning" id="storage-warn" style="display:none">
+    ⚠ Redis não conectado. Dados estão em memória e podem sumir a cada deploy. Configure REDIS_URL no Vercel (instruções com a Sofia).
+  </div>
+
+  <div class="filters">
+    <input type="text" id="q" placeholder="Buscar por nome, WhatsApp, Instagram, banco…">
+    <select id="filtro-classe">
+      <option value="">Todas as classes</option>
+      <option value="QUENTE">🟢 Quente</option>
+      <option value="MEDIO">🟡 Médio</option>
+      <option value="FRIO">🔴 Frio</option>
+    </select>
+    <select id="filtro-status">
+      <option value="">Todos os status</option>
+      <option value="aberto">Aberto</option>
+      <option value="em_andamento">Em andamento</option>
+      <option value="fechado">Fechado</option>
+      <option value="perdido">Perdido</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table id="tabela">
+      <thead>
+        <tr>
+          <th>Recebida</th>
+          <th>Classe</th>
+          <th>Nome / contato</th>
+          <th>Gasto/mês</th>
+          <th>Objetivo</th>
+          <th>Banco</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty" style="display:none">
+      <h2>Sem aplicações registradas ainda</h2>
+      <p>Assim que alguém preencher o formulário /aplicacao-vip, aparece aqui.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var PWD_KEY = 'crm-vip-pwd';
+  var loginEl = document.getElementById('login');
+  var appEl = document.getElementById('app');
+  var loginForm = document.getElementById('login-form');
+  var pwdInput = document.getElementById('pwd');
+  var loginErr = document.getElementById('login-err');
+  var tbody = document.getElementById('tbody');
+  var countEl = document.getElementById('count');
+  var emptyEl = document.getElementById('empty');
+  var qInput = document.getElementById('q');
+  var filtroClasse = document.getElementById('filtro-classe');
+  var filtroStatus = document.getElementById('filtro-status');
+  var storageWarn = document.getElementById('storage-warn');
+
+  var password = sessionStorage.getItem(PWD_KEY) || '';
+  var aplicacoes = [];
+  var openId = null;
+
+  function fmtData(iso) {
+    if (!iso) return '';
+    try {
+      var d = new Date(iso);
+      var dd = String(d.getDate()).padStart(2,'0');
+      var mm = String(d.getMonth()+1).padStart(2,'0');
+      var hh = String(d.getHours()).padStart(2,'0');
+      var mi = String(d.getMinutes()).padStart(2,'0');
+      return dd+'/'+mm+' '+hh+':'+mi;
+    } catch(e) { return iso; }
+  }
+  function classChip(c) {
+    if (c === 'QUENTE') return '<span class="chip q">🟢 Quente</span>';
+    if (c === 'MEDIO')  return '<span class="chip m">🟡 Médio</span>';
+    if (c === 'FRIO')   return '<span class="chip f">🔴 Frio</span>';
+    return '<span class="chip">'+esc(c||'-')+'</span>';
+  }
+  function statusChip(s) {
+    var lbl = { aberto:'Aberto', em_andamento:'Em andamento', fechado:'Fechado', perdido:'Perdido' }[s] || s || 'Aberto';
+    return '<span class="stat '+(s||'aberto')+'">'+esc(lbl)+'</span>';
+  }
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function whatsappLink(numero) {
+    var only = String(numero||'').replace(/\D/g,'');
+    if (only.length < 8) return '';
+    if (only.length <= 11) only = '55' + only;
+    return 'https://wa.me/' + only;
+  }
+  function igLink(handle) {
+    var h = String(handle||'').replace(/^@+/, '');
+    if (!h) return '';
+    return 'https://instagram.com/' + h;
+  }
+
+  async function login(pwd) {
+    var r = await fetch('/api/aplicacoes?password=' + encodeURIComponent(pwd));
+    if (r.status === 401) throw new Error('senha_incorreta');
+    if (!r.ok) throw new Error('erro_'+r.status);
+    var data = await r.json();
+    return {
+      lista: data.aplicacoes || [],
+      fallback: r.headers.get('X-CRM-Storage') === 'memory-fallback'
+    };
+  }
+
+  async function loadData() {
+    try {
+      var res = await login(password);
+      aplicacoes = res.lista;
+      storageWarn.style.display = res.fallback ? 'block' : 'none';
+      render();
+    } catch (err) {
+      if (String(err.message) === 'senha_incorreta') {
+        sessionStorage.removeItem(PWD_KEY);
+        showLogin();
+      } else {
+        countEl.textContent = 'erro ao carregar';
+      }
+    }
+  }
+
+  function render() {
+    var q = qInput.value.trim().toLowerCase();
+    var fc = filtroClasse.value;
+    var fs = filtroStatus.value;
+    var visiveis = aplicacoes.filter(function(a) {
+      if (fc && a.classe !== fc) return false;
+      if (fs && (a.status || 'aberto') !== fs) return false;
+      if (q) {
+        var bag = [a.q1, a.q2, a.q13, a.q6, a.q5, a.q11].join(' ').toLowerCase();
+        if (bag.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+    countEl.textContent = visiveis.length + ' de ' + aplicacoes.length + (aplicacoes.length === 1 ? ' aplicação' : ' aplicações');
+    emptyEl.style.display = aplicacoes.length === 0 ? 'block' : 'none';
+    tbody.innerHTML = visiveis.map(rowHtml).join('');
+    bindRows();
+  }
+  function rowHtml(a) {
+    var wa = whatsappLink(a.q2);
+    var ig = igLink(a.q13);
+    var contatoHtml = '';
+    if (wa) contatoHtml += '<a href="'+wa+'" target="_blank" rel="noopener">'+esc(a.q2)+'</a>';
+    if (ig) contatoHtml += (contatoHtml ? ' · ' : '') + '<a href="'+ig+'" target="_blank" rel="noopener">'+esc(a.q13)+'</a>';
+    if (!contatoHtml) contatoHtml = esc(a.q2||'-');
+
+    var row = ''
+      + '<tr class="row'+(openId===a.id?' open':'')+'" data-id="'+esc(a.id)+'">'
+      +   '<td>'+esc(fmtData(a.recebidoEm))+'</td>'
+      +   '<td>'+classChip(a.classe)+'</td>'
+      +   '<td><div class="nome">'+esc(a.q1||'-')+'</div><div class="contato">'+contatoHtml+'</div></td>'
+      +   '<td>'+esc(a.q3||'-')+'</td>'
+      +   '<td>'+esc(a.q5||'-')+'</td>'
+      +   '<td>'+esc(a.q6||'-')+'</td>'
+      +   '<td>'+statusChip(a.status)+'</td>'
+      + '</tr>';
+
+    if (openId === a.id) row += detailHtml(a);
+    return row;
+  }
+  function detailHtml(a) {
+    return ''
+      + '<tr class="detail"><td colspan="7">'
+      +   '<div class="detail-grid">'
+      +     fld('Nome', a.q1)
+      +     fld('WhatsApp', a.q2)
+      +     fld('Instagram', a.q13)
+      +     fld('Gasto/mês', a.q3)
+      +     fld('Usa milhas hoje', a.q4)
+      +     fld('Objetivo', a.q5)
+      +     fld('Banco', a.q6)
+      +     fld('Já voou executiva', a.q7)
+      +     fld('Tempo/semana', a.q8)
+      +     fld('Pronta pra R$4.000', a.q10)
+      +     fld('Veio de', a.q12)
+      +     fld('Recebida em', fmtData(a.recebidoEm))
+      +     fldFull('Por que particular > curso', a.q9)
+      +     (a.q11 ? fldFull('Extra', a.q11) : '')
+      +   '</div>'
+      +   '<div class="notas" style="margin-top:20px">'
+      +     '<label style="display:block;color:var(--ink-dim);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px">Notas internas</label>'
+      +     '<textarea data-notas="'+esc(a.id)+'" placeholder="Observações da abordagem…">'+esc(a.notas||'')+'</textarea>'
+      +   '</div>'
+      +   '<div class="detail-actions">'
+      +     '<label style="color:var(--ink-dim);font-size:12px">Status:</label>'
+      +     '<select data-status="'+esc(a.id)+'">'
+      +       optionsStatus(a.status)
+      +     '</select>'
+      +     '<button class="save" data-save="'+esc(a.id)+'">Salvar alterações</button>'
+      +     '<span class="msg" data-msg="'+esc(a.id)+'"></span>'
+      +   '</div>'
+      + '</td></tr>';
+  }
+  function fld(label, val) {
+    return '<div class="fld"><label>'+esc(label)+'</label><div class="val">'+esc(val||'-')+'</div></div>';
+  }
+  function fldFull(label, val) {
+    return '<div class="fld" style="grid-column:1/-1"><label>'+esc(label)+'</label><div class="val">'+esc(val||'-')+'</div></div>';
+  }
+  function optionsStatus(current) {
+    var opts = [
+      ['aberto','Aberto'],
+      ['em_andamento','Em andamento'],
+      ['fechado','Fechado'],
+      ['perdido','Perdido']
+    ];
+    return opts.map(function(o){
+      var sel = ((current||'aberto')===o[0])?' selected':'';
+      return '<option value="'+o[0]+'"'+sel+'>'+o[1]+'</option>';
+    }).join('');
+  }
+  function bindRows() {
+    Array.prototype.forEach.call(tbody.querySelectorAll('tr.row'), function(tr) {
+      tr.addEventListener('click', function(e) {
+        if (e.target.closest('a')) return; // deixa link funcionar
+        var id = tr.getAttribute('data-id');
+        openId = (openId === id) ? null : id;
+        render();
+      });
+    });
+    Array.prototype.forEach.call(tbody.querySelectorAll('[data-save]'), function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        var id = btn.getAttribute('data-save');
+        salvar(id);
+      });
+    });
+    Array.prototype.forEach.call(tbody.querySelectorAll('.detail select, .detail textarea, .detail button'), function(el) {
+      el.addEventListener('click', function(e){ e.stopPropagation(); });
+    });
+  }
+  async function salvar(id) {
+    var statusSel = tbody.querySelector('[data-status="'+cssEsc(id)+'"]');
+    var notasTa = tbody.querySelector('[data-notas="'+cssEsc(id)+'"]');
+    var msg = tbody.querySelector('[data-msg="'+cssEsc(id)+'"]');
+    if (!statusSel || !notasTa) return;
+    msg.className = 'msg';
+    msg.textContent = 'Salvando…';
+    try {
+      var r = await fetch('/api/aplicacoes?password=' + encodeURIComponent(password) + '&id=' + encodeURIComponent(id), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: statusSel.value, notas: notasTa.value })
+      });
+      if (!r.ok) throw new Error('http_'+r.status);
+      var data = await r.json();
+      if (!data.ok) throw new Error(data.error || 'erro');
+      // update local
+      var idx = aplicacoes.findIndex(function(a){return a.id===id;});
+      if (idx !== -1) aplicacoes[idx] = data.aplicacao;
+      msg.textContent = '✓ Salvo';
+      setTimeout(function(){ msg.textContent = ''; }, 2500);
+      // re-render pra atualizar chip de status
+      var currentOpen = openId;
+      render();
+      openId = currentOpen;
+    } catch (err) {
+      msg.className = 'msg err';
+      msg.textContent = 'Erro ao salvar';
+    }
+  }
+  function cssEsc(s) { return String(s).replace(/["\\]/g, '\\$&'); }
+
+  function exportCsv() {
+    var headers = ['Recebida','Classe','Nome','WhatsApp','Instagram','Gasto/mês','Usa milhas','Objetivo','Banco','Executiva','Tempo/semana','Por que particular','Pronta R$4k','Extra','Veio de','Status','Última atualização','Notas'];
+    var rows = aplicacoes.slice().sort(function(a,b){return (b.recebidoEm||'').localeCompare(a.recebidoEm||'');})
+      .map(function(a){
+        return [
+          fmtData(a.recebidoEm), a.classe, a.q1, a.q2, a.q13, a.q3, a.q4, a.q5, a.q6,
+          a.q7, a.q8, a.q9, a.q10, a.q11, a.q12, a.status || 'aberto', fmtData(a.atualizadoEm), a.notas || ''
+        ];
+      });
+    var csv = [headers].concat(rows).map(function(r){
+      return r.map(function(cell){
+        var s = String(cell == null ? '' : cell);
+        if (/[",\n]/.test(s)) s = '"' + s.replace(/"/g,'""') + '"';
+        return s;
+      }).join(',');
+    }).join('\r\n');
+    var blob = new Blob([ '\ufeff' + csv ], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'aplicacoes-vip-' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function showLogin() {
+    appEl.classList.remove('on');
+    loginEl.style.display = 'flex';
+    pwdInput.value = '';
+    pwdInput.focus();
+  }
+  function showApp() {
+    loginEl.style.display = 'none';
+    appEl.classList.add('on');
+    loadData();
+  }
+
+  loginForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    loginErr.textContent = '';
+    var pwd = pwdInput.value;
+    if (!pwd) return;
+    try {
+      await login(pwd);
+      password = pwd;
+      sessionStorage.setItem(PWD_KEY, pwd);
+      showApp();
+    } catch (err) {
+      loginErr.textContent = String(err.message) === 'senha_incorreta' ? 'Senha incorreta' : 'Erro: ' + err.message;
+    }
+  });
+  document.getElementById('btn-reload').addEventListener('click', loadData);
+  document.getElementById('btn-csv').addEventListener('click', exportCsv);
+  document.getElementById('btn-logout').addEventListener('click', function() {
+    password = '';
+    sessionStorage.removeItem(PWD_KEY);
+    aplicacoes = []; openId = null;
+    showLogin();
+  });
+  qInput.addEventListener('input', render);
+  filtroClasse.addEventListener('change', render);
+  filtroStatus.addEventListener('change', render);
+
+  if (password) {
+    showApp();
+  } else {
+    showLogin();
+  }
+})();
+</script>
+
+</body>
+</html>
